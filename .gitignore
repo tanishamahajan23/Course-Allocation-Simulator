@@ -2,4 +2,3 @@ virtualEnv/
 node_modules/
 .env
 dist/
-backend/
