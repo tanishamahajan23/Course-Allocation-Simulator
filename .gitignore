@@ -1,4 +1,4 @@
 virtualEnv/
 node_modules/
-.env
-dist/
+backend/.env
+backend/src/generated/prisma/
