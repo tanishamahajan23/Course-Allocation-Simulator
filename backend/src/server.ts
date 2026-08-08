@@ -1,6 +1,8 @@
 import express from "express";
 import { spawn } from "child_process";
 import path from "path";
+import { prisma } from "./database.js";
+import studentRoutes from "./student.routes.js";
 
 const app = express();
 
@@ -8,13 +10,34 @@ const PORT = 5000;
 
 app.use(express.json());
 
-// Health check
+app.use("/api/students", studentRoutes);
+
 app.get("/api/health", (req, res) => {
     res.json({
         status: "ok",
         message: "Course Allocation API is running"
     });
 });
+
+app.get("/api/test-db", async (req, res) => {
+    try {
+        const students = await prisma.student.findMany();
+
+        res.json({
+            connected: true,
+            students,
+        });
+    } catch (error) {
+        console.error("Database error:", error);
+
+        res.status(500).json({
+            connected: false,
+            error: "Database connection failed",
+        });
+    }
+});
+
+
 
 // Run allocation
 app.post("/api/allocations/run", (req, res) => {

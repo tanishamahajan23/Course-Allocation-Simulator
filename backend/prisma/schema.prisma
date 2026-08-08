@@ -1,0 +1,55 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  importFileExtension = "ts"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+model Student {
+  id           Int          @id @default(autoincrement())
+  name         String
+  email        String       @unique
+
+  preferences  Preference[]
+  allocations  Allocation[]
+}
+
+model Course {
+  id           Int          @id @default(autoincrement())
+  code         String       @unique
+  name         String
+  capacity     Int
+
+  preferences  Preference[]
+  allocations  Allocation[]
+}
+
+model Preference {
+  id        Int      @id @default(autoincrement())
+  rank      Int
+
+  studentId Int
+  courseId  Int
+
+  student   Student  @relation(fields: [studentId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id])
+
+  @@unique([studentId, courseId])
+  @@unique([studentId, rank])
+}
+
+model Allocation {
+  id              Int      @id @default(autoincrement())
+  preferenceRank  Int
+  score           Int
+
+  studentId       Int
+  courseId        Int
+
+  student         Student  @relation(fields: [studentId], references: [id])
+  course          Course   @relation(fields: [courseId], references: [id])
+
+  @@unique([studentId])
+}
