@@ -1,0 +1,13 @@
+{
+    "students": ["Alice", "Bob", "Charlie"],
+    "courses": {
+      "OS": 1,
+      "Networks": 1,
+      "DBMS": 1
+    },
+    "preferences": {
+      "Alice": ["OS", "Networks", "DBMS"],
+      "Bob": ["OS", "DBMS", "Networks"],
+      "Charlie": ["Networks", "OS", "DBMS"]
+    }
+  }
