@@ -3,6 +3,9 @@ import { spawn } from "child_process";
 import path from "path";
 import { prisma } from "./database.js";
 import studentRoutes from "./student.routes.js";
+import courseRoutes from "./course.routes.js";
+import preferenceRoutes from "./preference.routes.js";
+import allocationRoutes from "./allocation.routes.js";
 
 const app = express();
 
@@ -11,6 +14,9 @@ const PORT = 5000;
 app.use(express.json());
 
 app.use("/api/students", studentRoutes);
+app.use("/api/courses", courseRoutes);
+app.use("/api/preferences", preferenceRoutes);
+app.use("/api/allocations", allocationRoutes);
 
 app.get("/api/health", (req, res) => {
     res.json({
@@ -19,81 +25,6 @@ app.get("/api/health", (req, res) => {
     });
 });
 
-app.get("/api/test-db", async (req, res) => {
-    try {
-        const students = await prisma.student.findMany();
-
-        res.json({
-            connected: true,
-            students,
-        });
-    } catch (error) {
-        console.error("Database error:", error);
-
-        res.status(500).json({
-            connected: false,
-            error: "Database connection failed",
-        });
-    }
-});
-
-
-
-// Run allocation
-app.post("/api/allocations/run", (req, res) => {
-    const solverPath = path.resolve(
-        process.cwd(),
-        "../solver/solver.py"
-    );
-
-    const pythonProcess = spawn("python", [solverPath]);
-
-    let output = "";
-    let errorOutput = "";
-
-    // Receive normal output from Python
-    pythonProcess.stdout.on("data", (data) => {
-        output += data.toString();
-    });
-
-    // Receive error output from Python
-    pythonProcess.stderr.on("data", (data) => {
-        errorOutput += data.toString();
-    });
-
-    // Send allocation data to Python
-    pythonProcess.stdin.write(
-        JSON.stringify(req.body)
-    );
-
-    pythonProcess.stdin.end();
-
-    // Python process finished
-    pythonProcess.on("close", (code) => {
-        if (code !== 0) {
-            console.error("Python solver error:");
-            console.error(errorOutput);
-
-            return res.status(500).json({
-                error: "Solver failed",
-                details: errorOutput
-            });
-        }
-
-        try {
-            const result = JSON.parse(output);
-
-            return res.json(result);
-        } catch {
-            console.error("Could not parse solver output:");
-            console.error(output);
-
-            return res.status(500).json({
-                error: "Invalid solver response"
-            });
-        }
-    });
-});
 
 app.listen(PORT, () => {
     console.log(
