@@ -145,10 +145,8 @@ router.post("/run", async (req, res) => {
             "../solver/solver.py"
         );
 
-        const pythonPath = path.resolve(
-            process.cwd(),
-            "../virtualEnv/Scripts/python.exe"
-        );
+        const pythonPath =
+    process.env.PYTHON_PATH || "python3";
 
         console.log(
             "Python executable:",
