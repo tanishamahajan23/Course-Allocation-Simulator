@@ -50,3 +50,10 @@ app.listen(
         );
     }
 );
+
+app.get("/", (req, res) => {
+    res.json({
+        message:
+            "Course Allocation Backend Working",
+    });
+});
