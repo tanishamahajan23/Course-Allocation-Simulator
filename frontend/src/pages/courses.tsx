@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
+import { apiFetch } from "../api";
 
 interface Course {
     id: number;
@@ -26,9 +27,7 @@ function Courses() {
         try {
             setLoading(true);
 
-            const response = await fetch(
-                "http://127.0.0.1:5000/api/courses"
-            );
+            const response = await apiFetch("/api/courses");
 
             if (!response.ok) {
                 throw new Error("Failed to fetch courses");
@@ -77,8 +76,8 @@ function Courses() {
             setSaving(true);
             setError("");
 
-            const response = await fetch(
-                "http://127.0.0.1:5000/api/courses",
+            const response = await apiFetch(
+                "/api/courses",
                 {
                     method: "POST",
                     headers: {

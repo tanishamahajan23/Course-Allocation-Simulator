@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
+import { apiFetch } from "../api";
 
 interface Student {
     id: number;
@@ -49,9 +50,9 @@ function Preferences() {
                 coursesResponse,
                 preferencesResponse,
             ] = await Promise.all([
-                fetch("http://127.0.0.1:5000/api/students"),
-                fetch("http://127.0.0.1:5000/api/courses"),
-                fetch("http://127.0.0.1:5000/api/preferences"),
+                apiFetch("/api/students"),
+                apiFetch("/api/courses"),
+                apiFetch("/api/preferences"),
             ]);
 
             if (
@@ -192,8 +193,8 @@ function Preferences() {
                     continue;
                 }
     
-                const response = await fetch(
-                    "http://127.0.0.1:5000/api/preferences",
+                const response = await apiFetch(
+                    "/api/preferences",
                     {
                         method: "POST",
                         headers: {

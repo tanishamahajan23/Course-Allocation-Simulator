@@ -6,6 +6,9 @@ import Courses from "./pages/courses";
 import Preferences from "./pages/preferences";
 import Allocation from "./pages/allocation";
 import Simulation from "./pages/simulation";
+import StudentDashboard from "./pages/StudentDashboard";
+import Login from "./pages/login";
+import StudentPreferences from "./pages/studentPreferences";
 
 function App() {
     return (
@@ -31,6 +34,21 @@ function App() {
                     path="/admin/simulation"
                     element={<Simulation />}
                 />
+                <Route
+                   path="/student"
+                   element={<StudentDashboard />}
+                />
+                <Route
+                   path="/login"
+                   element={<Login />}
+                />
+
+<Route
+    path="/student/preferences"
+    element={
+        <StudentPreferences />
+    }
+/>
             </Routes>
         </BrowserRouter>
     );

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
+import { apiFetch } from "../api";
 
 interface Course {
     id: number;
@@ -45,8 +46,8 @@ function Simulation() {
 
     const loadCourses = async () => {
         try {
-            const response = await fetch(
-                "http://127.0.0.1:5000/api/courses"
+            const response = await apiFetch(
+                "/api/courses"
             );
 
             if (!response.ok) {
@@ -130,13 +131,12 @@ function Simulation() {
                 ] = value;
             }
 
-            const response = await fetch(
-                "http://127.0.0.1:5000/api/simulation/run",
+            const response = await apiFetch(
+                "/api/simulation/run",
                 {
                     method: "POST",
                     headers: {
-                        "Content-Type":
-                            "application/json",
+                        "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
                         capacityOverrides,

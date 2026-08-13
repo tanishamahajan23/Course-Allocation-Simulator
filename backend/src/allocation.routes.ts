@@ -3,9 +3,17 @@ import { spawn } from "child_process";
 import path from "path";
 
 import { prisma } from "./database.js";
+import {
+    requireAuth,
+    requireAdmin,
+} from "./auth.middleware.js";
 
 const router = express.Router();
 
+router.use(
+    requireAuth,
+    requireAdmin
+);
 /*
  * GET /api/allocations
  *
@@ -438,5 +446,26 @@ router.post("/run", async (req, res) => {
         });
     }
 });
+
+router.delete(
+    "/",
+    async (req, res) => {
+        try {
+            await prisma.allocation.deleteMany();
+
+            return res.json({
+                message:
+                    "Allocation reset successfully.",
+            });
+        } catch (error) {
+            console.error(error);
+
+            return res.status(500).json({
+                error:
+                    "Failed to reset allocation.",
+            });
+        }
+    }
+);
 
 export default router;

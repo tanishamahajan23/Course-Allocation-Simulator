@@ -6,6 +6,8 @@ import courseRoutes from "./course.routes.js";
 import preferenceRoutes from "./preference.routes.js";
 import allocationRoutes from "./allocation.routes.js";
 import simulationRoutes from "./simulation.routes.js";
+import authRoutes from "./auth.routes.js";
+import studentPortalRoutes from "./student.portal.routes.js";
 
 const app = express();
 
@@ -19,11 +21,15 @@ app.use(
     })
 );
 
+app.use("/api/auth", authRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/preferences", preferenceRoutes);
 app.use("/api/allocations", allocationRoutes);
 app.use("/api/simulation", simulationRoutes);
+
+app.use("/api/student",studentPortalRoutes);
+
 
 app.get("/api/health", (req, res) => {
     res.json({

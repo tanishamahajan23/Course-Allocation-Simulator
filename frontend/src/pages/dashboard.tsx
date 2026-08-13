@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "../App.css";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "../api";
 
 interface Student {
     id: number;
@@ -39,9 +40,9 @@ function Dashboard() {
             try {
                 const [studentsResponse, coursesResponse, allocationsResponse] =
                     await Promise.all([
-                        fetch("http://127.0.0.1:5000/api/students"),
-                        fetch("http://127.0.0.1:5000/api/courses"),
-                        fetch("http://127.0.0.1:5000/api/allocations"),
+                        apiFetch("/api/students"),
+                        apiFetch("/api/courses"),
+                        apiFetch("/api/allocations"),
                     ]);
 
                 if (

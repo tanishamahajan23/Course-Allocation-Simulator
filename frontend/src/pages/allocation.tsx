@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
+import { apiFetch } from "../api";
+
 
 interface Allocation {
     id: number;
@@ -26,16 +28,16 @@ function Allocation() {
 
     const [allocations, setAllocations] = useState<Allocation[]>([]);
     const [running, setRunning] = useState(false);
-    const [loading, setLoading] = useState(true);
-    const [message, setMessage] = useState("");
-    const [error, setError] = useState("");
+const [resetting, setResetting] = useState(false);
+const [loading, setLoading] = useState(true);
+const [message, setMessage] = useState("");
+const [error, setError] = useState("");
 
     const loadAllocations = async () => {
         try {
             setLoading(true);
-
-            const response = await fetch(
-                "http://127.0.0.1:5000/api/allocations"
+            const response = await apiFetch(
+                "/api/allocations"
             );
 
             if (!response.ok) {
@@ -63,8 +65,8 @@ function Allocation() {
             setMessage("");
             setError("");
 
-            const response = await fetch(
-                "http://127.0.0.1:5000/api/allocations/run",
+            const response = await apiFetch(
+                "/api/allocations/run",
                 {
                     method: "POST",
                     headers: {
@@ -94,6 +96,56 @@ function Allocation() {
             }
         } finally {
             setRunning(false);
+        }
+    };
+
+    const resetAllocation = async () => {
+        const confirmed = window.confirm(
+            "Reset the current allocation? This will remove all allocation results and allow students to edit their preferences again."
+        );
+    
+        if (!confirmed) {
+            return;
+        }
+    
+        try {
+            setResetting(true);
+            setMessage("");
+            setError("");
+    
+            const response = await apiFetch(
+                "/api/allocations",
+                {
+                    method: "DELETE",
+                }
+            );
+    
+            const data = await response.json();
+    
+            if (!response.ok) {
+                throw new Error(
+                    data.error ||
+                        "Failed to reset allocation."
+                );
+            }
+    
+            setMessage(
+                "Allocation reset successfully. Students can now edit their preferences."
+            );
+    
+            await loadAllocations();
+        } catch (error) {
+            console.error(error);
+    
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError(
+                    "Failed to reset allocation."
+                );
+            }
+        } finally {
+            setResetting(false);
         }
     };
 
@@ -224,15 +276,29 @@ function Allocation() {
                             </p>
                         </div>
 
-                        <button
-                            className="primary-button run-button"
-                            onClick={runAllocation}
-                            disabled={running}
-                        >
-                            {running
-                                ? "Running Solver..."
-                                : "Run Allocation"}
-                        </button>
+                        <div className="allocation-actions">
+    <button
+        className="primary-button run-button"
+        onClick={runAllocation}
+        disabled={running || resetting}
+    >
+        {running
+            ? "Running Solver..."
+            : "Run Allocation"}
+    </button>
+
+    {allocations.length > 0 && (
+        <button
+            className="reset-allocation-button"
+            onClick={resetAllocation}
+            disabled={running || resetting}
+        >
+            {resetting
+                ? "Resetting..."
+                : "Reset Allocation"}
+        </button>
+    )}
+</div>
                     </div>
 
                     {message && (

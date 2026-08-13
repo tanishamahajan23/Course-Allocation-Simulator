@@ -1,7 +1,21 @@
 import { Router } from "express";
 import { prisma } from "./database.js";
 
+import {
+    requireAuth,
+    requireAdmin,
+} from "./auth.middleware.js";
+
+
+
+// your existing course routes below...
+
 const router = Router();
+
+router.use(
+    requireAuth,
+    requireAdmin
+);
 
 // Create a course
 router.post("/", async (req, res) => {
