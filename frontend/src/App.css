@@ -1674,3 +1674,32 @@ select:focus {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.table-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.danger-button {
+  border: 1px solid #d8b4b4;
+  background: #fff;
+  color: #a33a3a;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.danger-button:hover {
+  background: #fff5f5;
+}
+
+.danger-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-success {
+  color: #2f6b3c;
+  margin: 12px 0;
+}
