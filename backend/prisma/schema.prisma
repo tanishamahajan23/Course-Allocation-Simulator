@@ -9,56 +9,43 @@ datasource db {
 }
 
 model Student {
-  id           Int          @id @default(autoincrement())
-  name         String
-  email        String       @unique
-
-  preferences  Preference[]
-  allocations  Allocation[]
-  user         User?
+  id          Int          @id @default(autoincrement())
+  name        String
+  email       String       @unique
+  allocations Allocation?
+  preferences Preference[]
+  user        User?
 }
 
 model Course {
-  id           Int          @id @default(autoincrement())
-  code         String       @unique
-  name         String
-  capacity     Int
-
-  preferences  Preference[]
-  allocations  Allocation[]
+  id          Int          @id @default(autoincrement())
+  code        String       @unique
+  name        String
+  capacity    Int
+  allocations Allocation[]
+  preferences Preference[]
 }
 
 model Preference {
-  id        Int      @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   rank      Int
-
   studentId Int
   courseId  Int
-
-  student   Student  @relation(fields: [studentId], references: [id])
-  course    Course   @relation(fields: [courseId], references: [id])
+  course    Course  @relation(fields: [courseId], references: [id])
+  student   Student @relation(fields: [studentId], references: [id])
 
   @@unique([studentId, courseId])
   @@unique([studentId, rank])
 }
 
 model Allocation {
-  id              Int      @id @default(autoincrement())
-  preferenceRank  Int
-  score           Int
-
-  studentId       Int
-  courseId        Int
-
-  student         Student  @relation(fields: [studentId], references: [id])
-  course          Course   @relation(fields: [courseId], references: [id])
-
-  @@unique([studentId])
-}
-
-enum UserRole {
-  ADMIN
-  STUDENT
+  id             Int     @id @default(autoincrement())
+  preferenceRank Int
+  score          Int
+  studentId      Int     @unique
+  courseId       Int
+  course         Course  @relation(fields: [courseId], references: [id])
+  student        Student @relation(fields: [studentId], references: [id])
 }
 
 model User {
@@ -66,9 +53,12 @@ model User {
   email        String   @unique
   passwordHash String
   role         UserRole @default(STUDENT)
-
   studentId    Int?     @unique
-  student      Student? @relation(fields: [studentId], references: [id])
-
   createdAt    DateTime @default(now())
+  student      Student? @relation(fields: [studentId], references: [id])
+}
+
+enum UserRole {
+  ADMIN
+  STUDENT
 }

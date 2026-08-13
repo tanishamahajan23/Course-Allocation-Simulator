@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { apiFetch } from "../api";
 
 interface Student {
     id: number;
@@ -47,49 +46,20 @@ function StudentDashboard() {
 
     useEffect(() => {
         async function loadDashboard() {
-            const token =
-                localStorage.getItem("token");
-
-            if (!token) {
-                navigate("/login");
-                return;
-            }
-
             try {
-                const headers = {
-                    Authorization: `Bearer ${token}`,
-                };
-
                 const [
                     studentResponse,
                     preferencesResponse,
                     allocationResponse,
                 ] = await Promise.all([
-                    fetch(
-                        `${API_URL}/api/student/me`,
-                        { headers }
+                    apiFetch("/api/student/me"),
+                    apiFetch(
+                        "/api/student/preferences"
                     ),
-                    fetch(
-                        `${API_URL}/api/student/preferences`,
-                        { headers }
-                    ),
-                    fetch(
-                        `${API_URL}/api/student/allocation`,
-                        { headers }
+                    apiFetch(
+                        "/api/student/allocation"
                     ),
                 ]);
-
-                if (
-                    studentResponse.status === 401 ||
-                    preferencesResponse.status === 401 ||
-                    allocationResponse.status === 401
-                ) {
-                    localStorage.removeItem("token");
-                    localStorage.removeItem("user");
-
-                    navigate("/login");
-                    return;
-                }
 
                 if (
                     !studentResponse.ok ||
@@ -111,10 +81,15 @@ function StudentDashboard() {
                     await allocationResponse.json();
 
                 setStudent(studentData);
-                setPreferences(preferencesData);
-                setAllocation(allocationData);
+                setPreferences(
+                    preferencesData
+                );
+                setAllocation(
+                    allocationData
+                );
             } catch (error) {
                 console.error(error);
+
                 setError(
                     "Could not load your dashboard."
                 );
@@ -124,7 +99,7 @@ function StudentDashboard() {
         }
 
         loadDashboard();
-    }, [navigate]);
+    }, []);
 
     function logout() {
         localStorage.removeItem("token");
@@ -147,7 +122,10 @@ function StudentDashboard() {
         return (
             <div className="student-page">
                 <div className="student-error">
-                    <h2>Something went wrong</h2>
+                    <h2>
+                        Something went wrong
+                    </h2>
+
                     <p>{error}</p>
 
                     <button
@@ -218,8 +196,8 @@ function StudentDashboard() {
 
                     <p>
                         Manage your course
-                        preferences and keep track
-                        of your allocation.
+                        preferences and keep
+                        track of your allocation.
                     </p>
                 </section>
 
@@ -230,7 +208,7 @@ function StudentDashboard() {
                         </span>
 
                         <strong>
-                            {preferences.length}
+                            {preferences.length} / 5
                         </strong>
                     </div>
 
@@ -268,7 +246,8 @@ function StudentDashboard() {
                                 </h2>
 
                                 <p>
-                                    Your current course
+                                    Your current
+                                    course
                                     preferences.
                                 </p>
                             </div>
@@ -280,8 +259,13 @@ function StudentDashboard() {
                                         "/student/preferences"
                                     )
                                 }
+                                disabled={
+                                    !!allocation
+                                }
                             >
-                                Manage
+                                {allocation
+                                    ? "Preferences Locked"
+                                    : "Manage"}
                             </button>
                         </div>
 
@@ -295,8 +279,9 @@ function StudentDashboard() {
                                 <p>
                                     Add your preferred
                                     courses to
-                                    participate in the
-                                    allocation process.
+                                    participate in
+                                    the allocation
+                                    process.
                                 </p>
 
                                 <button
@@ -313,7 +298,9 @@ function StudentDashboard() {
                         ) : (
                             <div className="preference-list">
                                 {preferences.map(
-                                    (preference) => (
+                                    (
+                                        preference
+                                    ) => (
                                         <div
                                             className="preference-item"
                                             key={
@@ -358,7 +345,8 @@ function StudentDashboard() {
                                 </h2>
 
                                 <p>
-                                    Your current course
+                                    Your current
+                                    course
                                     assignment.
                                 </p>
                             </div>
@@ -372,14 +360,16 @@ function StudentDashboard() {
 
                                 <strong>
                                     {
-                                        allocation.course
+                                        allocation
+                                            .course
                                             .code
                                     }
                                 </strong>
 
                                 <p>
                                     {
-                                        allocation.course
+                                        allocation
+                                            .course
                                             .name
                                     }
                                 </p>
@@ -410,6 +400,14 @@ function StudentDashboard() {
                                         </strong>
                                     </div>
                                 </div>
+
+                                <p className="allocation-result">
+                                    You received your #
+                                    {
+                                        allocation.preferenceRank
+                                    }{" "}
+                                    preference.
+                                </p>
                             </div>
                         ) : (
                             <div className="student-empty">
@@ -418,10 +416,12 @@ function StudentDashboard() {
                                 </h3>
 
                                 <p>
-                                    Your allocation will
-                                    appear here once the
-                                    administrator runs
-                                    the allocation.
+                                    Your allocation
+                                    will appear
+                                    here once the
+                                    administrator
+                                    runs the
+                                    allocation.
                                 </p>
                             </div>
                         )}
