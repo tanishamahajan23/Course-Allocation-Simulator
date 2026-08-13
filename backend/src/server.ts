@@ -11,7 +11,9 @@ import studentPortalRoutes from "./student.portal.routes.js";
 
 const app = express();
 
-const PORT = Number(process.env.PORT) || 5000;
+const PORT = Number(
+    process.env.PORT || 5000
+);
 
 app.use(express.json());
 
@@ -39,8 +41,12 @@ app.get("/api/health", (req, res) => {
 });
 
 
-app.listen(PORT, "0.0.0.0", () => {
-    console.log(
-        `Server running on port ${PORT}`
-    );
-});
+app.listen(
+    PORT,
+    "0.0.0.0",
+    () => {
+        console.log(
+            `Server running on port ${PORT}`
+        );
+    }
+);
