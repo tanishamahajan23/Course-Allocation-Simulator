@@ -170,10 +170,6 @@ router.delete("/:id", async (req, res) => {
         const student =
             await prisma.student.findUnique({
                 where: { id },
-                include: {
-                    preferences: true,
-                    allocations: true,
-                },
             });
 
         if (!student) {
@@ -182,7 +178,14 @@ router.delete("/:id", async (req, res) => {
             });
         }
 
-        if (student.allocations.length > 0) {
+        const allocation =
+            await prisma.allocation.findUnique({
+                where: {
+                    studentId: id,
+                },
+            });
+
+        if (allocation) {
             return res.status(409).json({
                 error:
                     "This student has an active allocation. Reset the allocation before deleting the student.",
