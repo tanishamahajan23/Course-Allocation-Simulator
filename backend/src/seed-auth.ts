@@ -2,6 +2,13 @@ import bcrypt from "bcryptjs";
 import { prisma } from "./database.js";
 
 async function main() {
+    // Remove student accounts created by the old seed
+    await prisma.user.deleteMany({
+        where: {
+            role: "STUDENT",
+        },
+    });
+
     const passwordHash = await bcrypt.hash(
         "admin123",
         10
